@@ -1,0 +1,238 @@
+{
+  "name": "Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message"],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [0, -140],
+      "id": "d3817d77-0bf9-4fea-9933-7b8771bd7f21",
+      "name": "Telegram Trigger",
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_TELEGRAM_ACCOUNT_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[2].file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [220, -140],
+      "id": "6e5ddd31-9ef3-4db2-b081-5d79504e3391",
+      "name": "Get a file",
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_TELEGRAM_ACCOUNT_NAME"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Accede al campo de datos\nconst file = items[0].binary?.data;\nif (file) {\n    const fileExtension = file.fileName.split('.').pop().toLowerCase();\n    if (fileExtension === 'jpg' || fileExtension === 'jpeg') {\n        file.mimeType = 'image/jpeg';\n    } else if (fileExtension === 'png') {\n        file.mimeType = 'image/png';\n    } else {\n        throw new Error(\"El archivo no es una imagen válida.\");\n    }\n    return [{ binary: { data: file } }];\n} else {\n    throw new Error(\"No se encontraron datos binarios en el archivo.\");\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, -140],
+      "id": "1a64c874-e926-4833-830f-5d91ee730b58",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "Analiza la imagen y dime en un párrafo qué hay en la imagen.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [660, -140],
+      "id": "47cd67be-a7f5-487b-9971-83f21965ff01",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_OPENAI_ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "058f60ed-197e-42cb-873c-64c36ef3be25",
+              "name": "Foto Telegram",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [880, -140],
+      "id": "656b1cb0-e890-476d-a030-6b2846e8b9ee",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Foto Telegram'] }}",
+        "options": {
+          "systemMessage": "=ENTREGA LA INFORMACION EN EL SIGUIENTE FORMATO\n¿Qué hay en la imagen?: {{ $json['Foto Telegram'] }}\nAl final retorna el mensaje de lo que contiene la foto al chat de telegram\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [1100, -140],
+      "id": "f06e68e5-4a9d-4cfe-b754-a64e4a57a8c5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1040, 80],
+      "id": "ee9821cc-d5b5-4f22-b683-635b663f8324",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_OPENAI_ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Example Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_GID",
+          "mode": "list",
+          "cachedResultName": "Sheet Name",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=YOUR_SHEET_GID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "¿Qué hay en la imagen?": "={{ $fromAI(\"output\") }}"
+          },
+          "matchingColumns": ["¿Qué hay en la imagen?"],
+          "schema": [
+            {
+              "id": "¿Qué hay en la imagen?",
+              "displayName": "¿Qué hay en la imagen?",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [1240, 80],
+      "id": "9a5f9637-07d7-4591-b546-49631753cf30",
+      "name": "Append row in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_GOOGLE_SHEETS_ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $('Edit Fields').item.json['Foto Telegram'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1460, -140],
+      "id": "047cae81-b59a-41fc-a24d-076a6e1faaf0",
+      "name": "Send a text message",
+      "webhookId": "REPLACE_WITH_WEBHOOK_ID",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "REPLACE_WITH_TELEGRAM_ACCOUNT_NAME"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [[{ "node": "Get a file", "type": "main", "index": 0 }]]
+    },
+    "Get a file": {
+      "main": [[{ "node": "Code", "type": "main", "index": 0 }]]
+    },
+    "Code": {
+      "main": [[{ "node": "Analyze image", "type": "main", "index": 0 }]]
+    },
+    "Analyze image": {
+      "main": [[{ "node": "Edit Fields", "type": "main", "index": 0 }]]
+    },
+    "Edit Fields": {
+      "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Append row in Google Sheets": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    },
+    "AI Agent": {
+      "main": [[{ "node": "Send a text message", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "REPLACE_WITH_VERSION_ID",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REPLACE_WITH_INSTANCE_ID"
+  },
+  "id": "REPLACE_WITH_WORKFLOW_ID",
+  "tags": []
+}
