@@ -97,4 +97,4 @@ Este flujo fue desarrollado como ejemplo educativo para mostrar cómo combinar m
 
 ## ✨ Licencia
 
-MIT – Libre para usar y modificar. Si te resulta útil, ¡considera dar ⭐️ en GitHub!
+MIT – Libre para usar y modificar.
