@@ -1,5 +1,7 @@
 # Google Sheets Form Collector (n8n workflow)
 
+![alt text](<Screenshot 2025-07-07 at 2.48.31 PM.png>)
+
 Este flujo en [n8n](https://n8n.io/) permite capturar datos desde un formulario web y guardarlos automáticamente en una hoja de cálculo de Google Sheets.
 
 ## 🔧 Requisitos

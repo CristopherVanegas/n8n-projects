@@ -1,5 +1,7 @@
 # 🔍 RAG Workflow with n8n + Google Drive + OpenAI + Pinecone
 
+![alt text](<Screenshot 2025-07-07 at 2.48.47 PM.png>)
+
 Este flujo de trabajo en **n8n** implementa una arquitectura RAG (Retrieval-Augmented Generation) para subir documentos a una base vectorial (Pinecone) y permitir consultas en lenguaje natural mediante un agente inteligente potenciado con OpenAI.
 
 ---

@@ -1,5 +1,7 @@
 # 🤖 Telegram Image Analyzer with Google Sheets & OpenAI (n8n Workflow)
 
+![alt text](<Screenshot 2025-07-07 at 1.37.09 PM.png>)
+
 Este flujo de trabajo en **n8n** permite recibir imágenes por Telegram, analizarlas con **OpenAI (GPT-4 Vision)**, registrar el resultado en **Google Sheets** y enviar una respuesta automática al usuario.
 
 ---
