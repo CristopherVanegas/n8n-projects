@@ -109,5 +109,4 @@ Desarrollado como ejemplo de arquitectura RAG automatizada para casos de uso com
 
 ## 📄 Licencia
 
-MIT – Puedes usarlo, modificarlo o compartirlo libremente.  
-Si te resulta útil, ¡déjanos un ⭐ en el repositorio!
+MIT – Puedes usarlo, modificarlo o compartirlo libremente.

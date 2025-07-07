@@ -26,3 +26,9 @@ Este flujo en [n8n](https://n8n.io/) permite capturar datos desde un formulario 
 1. Importa el JSON en tu instancia de n8n.
 2. Configura las credenciales de Google Sheets.
 3. Activa el flujo y prueba el formulario.
+
+---
+
+## 📄 Licencia
+
+MIT – Puedes usarlo, modificarlo o compartirlo libremente.
